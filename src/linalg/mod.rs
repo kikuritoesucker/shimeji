@@ -1,5 +1,5 @@
 pub mod matrix;
-pub mod vectors;
+pub mod vector;
 pub mod scalar;
 pub mod quaternion;
 pub mod gfx;

@@ -79,7 +79,7 @@ macro_rules! mat4_mm {
 }
 
 #[macro_export]
-macro_rules! vec3f_cross {
+macro_rules! cross {
     ($a:expr, $b:expr) => {
         crate::linalg::Vec3f::from([[
             $a.y() * $b.z() - $a.z() * $b.y(),
@@ -93,5 +93,26 @@ macro_rules! vec3f_cross {
 macro_rules! vec_normalized {
     ($a:expr) => {
         $a / $a.length()
+    };
+}
+
+#[macro_export]
+macro_rules! vec_angle {
+    ($a:expr, $b:expr) => {
+        a.dot(b) / (a.length_squared() * b.length_squared()).sqrt()
+    };
+}
+
+#[macro_export]
+macro_rules! vec_from {
+    ($($a:expr), *) => {
+        crate::linalg::TVec::from([[$($a), *]])
+    }
+}
+
+#[macro_export]
+macro_rules! qua_from {
+    ($a:expr, $b:expr, $c:expr, $d:expr) => {
+        crate::linalg::Qua::new_from($a, $b, $c, $d)
     };
 }

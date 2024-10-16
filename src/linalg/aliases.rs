@@ -2,6 +2,7 @@
  *
  */
 pub use super::matrix::TMat;
+use super::quaternion::Quaternion;
 
 pub type TVec<T, const U: usize> = TMat<T, U, 1>;
 
@@ -36,3 +37,5 @@ pub type Mat4i = Mat4<i32>;
 pub type Mat2u = Mat2<u32>;
 pub type Mat3u = Mat3<u32>;
 pub type Mat4u = Mat4<u32>;
+
+pub type Qua = Quaternion<f32>;

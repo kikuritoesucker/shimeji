@@ -38,16 +38,16 @@ where
     }
 }
 
-impl<T, const R: usize, const C: usize> From<T> for TMat<T, R, C>
-where
-    T: Copy,
-{
-    fn from(value: T) -> Self {
-        Self {
-            data: [[value; R]; C],
-        }
-    }
-}
+// impl<T, const R: usize, const C: usize> From<T> for TMat<T, R, C>
+// where
+//     T: Copy,
+// {
+//     fn from(value: T) -> Self {
+//         Self {
+//             data: [[value; R]; C],
+//         }
+//     }
+// }
 
 impl<T, const R: usize, const C: usize> From<[[T; R]; C]> for TMat<T, R, C>
 where

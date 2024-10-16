@@ -1,12 +1,13 @@
 /*
     Implementation of quaternion.
+    H = a + bi + cj + dk
 */
 #[derive(Debug, Clone, Copy)]
-struct Quaternion<T> {
-    x: T,
-    y: T,
-    z: T,
-    w: T,
+pub struct Quaternion<T> {
+    a: T,
+    b: T,
+    c: T,
+    d: T,
 }
 
 #[allow(unused)]
@@ -14,21 +15,21 @@ impl<T> Quaternion<T>
 where
     T: Default,
 {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self {
-            x: T::default(),
-            y: T::default(),
-            z: T::default(),
-            w: T::default(),
+            a: T::default(),
+            b: T::default(),
+            c: T::default(),
+            d: T::default(),
         }
     }
 
-    fn new_from(x: T, y: T, z: T, w: T) -> Self {
+    pub fn new_from(a: T, b : T, c: T, d: T) -> Self {
         Self {
-            x: x,
-            y: y,
-            z: z,
-            w: w,
+            a,
+            b,
+            c,
+            d,
         }
     }
 }
@@ -39,10 +40,10 @@ where
 {
     fn from(value: [T; 4]) -> Self {
         Self {
-            x: value[0],
-            y: value[1],
-            z: value[2],
-            w: value[3],
+            a: value[0],
+            b: value[1],
+            c: value[2],
+            d: value[3],
         }
     }
 }
@@ -54,11 +55,42 @@ where
     type Output = Quaternion<T>;
     fn add(self, rhs: Self) -> Self::Output {
         Self {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y,
-            z: self.z + rhs.z,
-            w: self.w + rhs.w,
+            a: self.a + rhs.a,
+            b: self.b + rhs.b,
+            c: self.c + rhs.c,
+            d: self.d + rhs.d,
         }
     }
 }
 
+impl<T> std::ops::Mul<T> for Quaternion<T>
+where
+    T: Default + Copy + std::ops::Mul<T, Output = T>,
+{
+    type Output = Quaternion<T>;
+    fn mul(self, rhs: T) -> Self::Output {
+        Self {
+            a: self.a * rhs,
+            b: self.b * rhs,
+            c: self.c * rhs,
+            d: self.d * rhs,
+        }
+    }
+}
+
+impl<T> std::ops::Mul<Self> for Quaternion<T>
+where
+    T: Default + Copy + std::ops::Mul<T, Output = T> + std::ops::Add<T, Output = T> + std::ops::Sub<T, Output = T>
+{
+    type Output = Quaternion<T>;
+    fn mul(self, rhs: Self) -> Self::Output {
+        let (a1, b1, c1, d1) = (self.a, self.b, self.c, self.d);
+        let (a2, b2, c2, d2) = (rhs.a, rhs.b, rhs.c, rhs.d);
+        Self {
+            a: a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2,
+            b: a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2,
+            c: a1 * c2 - b1 * d2 + c1 * a1 + d1 * b2,
+            d: a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2 
+        }
+    }
+}
