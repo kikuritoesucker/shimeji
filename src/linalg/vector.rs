@@ -39,16 +39,16 @@ where
         self.length_squared().sqrt()
     }
 
-    pub fn normalized(&self) -> Self {
+    pub fn normalize(&self) -> Self {
         self.clone() / self.length()
     }
 
-    pub fn normalize(&mut self) {
-        let length = self.length();
-        for i in 0..L {
-            self.data[0][i] /= length;
-        }
-    }
+    // pub fn normalize(&mut self) {
+    //     let length = self.length();
+    //     for i in 0..L {
+    //         self.data[0][i] /= length;
+    //     }
+    // }
 }
 
 impl<T, const U: usize> Into<[T; U]> for TVec<T, U>

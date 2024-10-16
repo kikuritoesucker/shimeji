@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use super::*;
 
 impl Mat4f {

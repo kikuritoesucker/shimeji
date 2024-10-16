@@ -3,7 +3,8 @@ mod tween;
 
 use linalg::*;
 fn main() {
-    let q1 = vec_from!(1.0, 2.0, 3.0);
-    let q2 = vec_from!(2.0, 4.0, 2.0);
-    println!("{:?}", cross!(q1, q2).dot(&q2));
+    let p = cmp_from!(1.0, 1.0);
+    let q = cmp_from!(1.0, 0.5);
+
+    println!("{:?}", p.inverse() * q * p);
 }

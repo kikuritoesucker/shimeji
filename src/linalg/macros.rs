@@ -116,3 +116,10 @@ macro_rules! qua_from {
         crate::linalg::Qua::new_from($a, $b, $c, $d)
     };
 }
+
+#[macro_export]
+macro_rules! cmp_from {
+    ($a:expr, $b:expr) => {
+        crate::linalg::Cmp::new_from($a, $b)
+    };
+}

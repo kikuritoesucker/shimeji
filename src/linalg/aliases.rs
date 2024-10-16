@@ -1,8 +1,10 @@
 /*!Vectors are stored in one row for the good of cache locality and performance.
  *
  */
+#![allow(unused)]
+
 pub use super::matrix::TMat;
-use super::quaternion::Quaternion;
+use super::{complex::Complex, quaternion::Quaternion};
 
 pub type TVec<T, const U: usize> = TMat<T, U, 1>;
 
@@ -39,3 +41,4 @@ pub type Mat3u = Mat3<u32>;
 pub type Mat4u = Mat4<u32>;
 
 pub type Qua = Quaternion<f32>;
+pub type Cmp = Complex<f32>;
