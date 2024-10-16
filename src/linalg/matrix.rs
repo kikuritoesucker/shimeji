@@ -278,8 +278,8 @@ where
 
     fn div(self, rhs: T) -> Self::Output {
         let mut result: TMat<T, R, C> = Self::default();
-        for i in 0..R {
-            for j in 0..C {
+        for i in 0..C {
+            for j in 0..R {
                 result.data[i][j] = self.data[i][j] / rhs;
             }
         }

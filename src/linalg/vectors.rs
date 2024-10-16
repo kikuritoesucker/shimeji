@@ -1,8 +1,15 @@
 use super::aliases::*;
-
 impl<T, const L: usize> TVec<T, L>
 where
-    T: Default + Clone + Copy + std::ops::AddAssign + std::ops::Mul<T, Output = T>,
+    T: Default
+        + Copy
+        + num_traits::Float
+        + std::ops::AddAssign
+        + std::ops::DivAssign
+        + std::ops::Mul<T, Output = T>
+        + std::ops::Div<T, Output = T>
+        + std::fmt::Display,
+    f32: From<T>
 {
     pub fn dot(&self, other: &Self) -> T {
         let mut result = T::default();
@@ -12,11 +19,38 @@ where
         result
     }
 
-    pub fn normalized(&self) -> Self {
-        
+    pub fn sum(&self) -> T {
+        let mut sum : T = T::default();
+        for &i in &self.data[0] {
+            sum += i;
+        }
+        sum
     }
-}
 
+    pub fn length_squared(&self) -> T {
+        let mut length_squared = T::default();
+        for &i in &self.data[0] {
+            length_squared += i * i
+        }
+        length_squared
+    }
+
+    pub fn length(&self) -> T{
+        self.length_squared().sqrt()
+    }
+
+    pub fn normalized(&self) -> Self {
+        self.clone() / self.length()
+    }
+
+    pub fn normalize(&mut self) {
+        let length = self.length();
+        for i in 0..L {
+            self.data[0][i] /= length;
+        }
+    }
+    
+}
 
 impl<T> Vec3<T>
 where

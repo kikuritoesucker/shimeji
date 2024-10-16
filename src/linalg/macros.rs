@@ -1,5 +1,5 @@
 #[macro_export]
-macro_rules! mat4f_mul {
+macro_rules! mat4_mm {
     ($a:expr, $b:expr) => {
         crate::linalg::Mat4f::from([
             [
@@ -86,5 +86,12 @@ macro_rules! vec3f_cross {
             $a.z() * $b.x() - $a.x() * $b.z(),
             $a.x() * $b.y() - $a.y() * $b.x(),
         ]])
+    };
+}
+
+#[macro_export]
+macro_rules! vec_normalized {
+    ($a:expr) => {
+        $a / $a.length()
     };
 }
