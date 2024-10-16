@@ -9,7 +9,7 @@ where
         + std::ops::Mul<T, Output = T>
         + std::ops::Div<T, Output = T>
         + std::fmt::Display,
-    f32: From<T>
+    f32: From<T>,
 {
     pub fn dot(&self, other: &Self) -> T {
         let mut result = T::default();
@@ -20,7 +20,7 @@ where
     }
 
     pub fn sum(&self) -> T {
-        let mut sum : T = T::default();
+        let mut sum: T = T::default();
         for &i in &self.data[0] {
             sum += i;
         }
@@ -35,7 +35,7 @@ where
         length_squared
     }
 
-    pub fn length(&self) -> T{
+    pub fn length(&self) -> T {
         self.length_squared().sqrt()
     }
 
@@ -49,8 +49,18 @@ where
             self.data[0][i] /= length;
         }
     }
-    
 }
+
+impl<T, const U: usize> Into<[T; U]> for TVec<T, U>
+where
+    T: Copy,
+{
+    fn into(self) -> [T; U] {
+        self.data[0]
+    }
+}
+
+// Vec3 Methods
 
 impl<T> Vec3<T>
 where
@@ -62,6 +72,8 @@ where
         Vec3::from([[y1 * z2 - z1 * y2, z1 * x2 - x1 * z2, x1 * y2 - y1 * x2]])
     }
 }
+
+// Vec2 Methods
 
 impl<T> Vec2<T>
 where

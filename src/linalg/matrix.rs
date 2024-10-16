@@ -2,6 +2,8 @@
     Implementation of typed matrix.
 */
 
+use super::TVec;
+
 /// #### Typed Matrix
 /// TMat<T, R, C> creates an RxC matrix of type T.\
 /// TMat stores elements in column-major order.\
@@ -19,6 +21,7 @@
 /// ```no_run
 /// let myMat : TMat<_, 4, 4> = TMat::from(0.0);
 /// ```
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct TMat<T, const R: usize, const C: usize> {
     pub data: [[T; R]; C],
