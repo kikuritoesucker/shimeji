@@ -2,7 +2,7 @@ mod linalg;
 mod tween;
 mod io;
 mod event;
-
+mod object;
 use linalg::*;
 
 fn main() {

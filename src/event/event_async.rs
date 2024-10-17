@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
@@ -16,16 +18,16 @@ impl<T: Clone> EventAsync<T> {
         }
     }
 
-    pub fn connect(&self, callback: Callback<T>) -> usize {
+    pub fn subscribe(&self, callback: Callback<T>) -> usize {
         let mut callbacks = self.callbacks.lock().unwrap();
         let mut next_id = self.next_id.lock().unwrap();
         let id = *next_id;
-        *next_id += 1;
         callbacks.insert(id, callback);
+        *next_id += 1;
         id
     }
 
-    pub fn disconnect(&self, id: usize) {
+    pub fn unsubscribe(&self, id: usize) {
         let mut callbacks = self.callbacks.lock().unwrap();
         callbacks.remove(&id);
     }
