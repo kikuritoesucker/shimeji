@@ -161,6 +161,16 @@ where
     }
 }
 
+impl<T, const R: usize, const C: usize> std::ops::AddAssign for TMat<T, R, C>
+where
+    T: std::ops::Add<Output = T> + Copy,
+    Self: Default,
+{
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
 // Sub
 
 impl<T, const R: usize, const C: usize> std::ops::Sub<Self> for TMat<T, R, C>
@@ -196,6 +206,16 @@ where
             }
         }
         result
+    }
+}
+
+impl<T, const R: usize, const C: usize> std::ops::SubAssign for TMat<T, R, C>
+where
+    T: std::ops::Sub<Output = T> + Copy,
+    Self: Default,
+{
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
     }
 }
 
@@ -249,6 +269,17 @@ where
     }
 }
 
+impl<T, const R: usize, const C: usize> std::ops::MulAssign for TMat<T, R, C>
+where
+    T: std::ops::Mul<Output = T> + Copy,
+    Self: Default,
+{
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs;
+    }
+}
+
+
 impl<T, const A: usize, const B: usize> TMat<T, A, B>
 where
     T: std::ops::Mul<T, Output = T> + Default + Copy + std::ops::AddAssign,
@@ -287,5 +318,15 @@ where
             }
         }
         result
+    }
+}
+
+impl<T, const R: usize, const C: usize> std::ops::DivAssign<T> for TMat<T, R, C>
+where
+    T: std::ops::Div<Output = T> + Copy,
+    Self: Default,
+{
+    fn div_assign(&mut self, rhs: T) {
+        *self = *self / rhs;
     }
 }

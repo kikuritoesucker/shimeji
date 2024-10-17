@@ -84,6 +84,30 @@ impl Mat4f {
             * Self::rotation_x(rotation.x())
             * Self::rotation_y(rotation.y())
     }
+
+    pub fn rotation_qua(rotation: Qua) -> Mat4f {
+        let x = rotation.b;
+        let y = rotation.c;
+        let z = rotation.d;
+        let w = rotation.a;
+
+        let xx = x * x;
+        let yy = y * y;
+        let zz = z * z;
+        let xy = x * y;
+        let xz = x * z;
+        let yz = y * z;
+        let wx = w * x;
+        let wy = w * y;
+        let wz = w * z;
+
+        Mat4f::from([
+            [1.0 - 2.0 * (yy + zz), 2.0 * (xy - wz), 2.0 * (xz + wy), 0.0],
+            [2.0 * (xy + wz), 1.0 - 2.0 * (xx + zz), 2.0 * (yz - wx), 0.0],
+            [2.0 * (xz - wy), 2.0 * (yz + wx), 1.0 - 2.0 * (xx + yy), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ])
+    }
 }
 
 // Translation

@@ -1,5 +1,5 @@
 use core::panic;
-use std::{borrow::BorrowMut, cell::{RefCell, RefMut}, fmt::Debug, rc::Rc};
+use std::{cell::{RefCell, RefMut}, fmt::Debug, rc::Rc};
 use super::{obj, obj_trait::*};
 
 #[macro_export]
@@ -41,7 +41,6 @@ impl Node {
                 get_ref!(new_node)
             }
         }
-
     }
 
     fn add_child(&mut self, other : Rc<RefCell<Node>>) {
