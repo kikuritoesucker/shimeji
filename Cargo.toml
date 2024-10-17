@@ -9,4 +9,4 @@ num-traits = "*"
 image = "*"
 glium = "*"
 
-tokio = "*"
+# tokio = "*"

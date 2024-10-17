@@ -2,11 +2,11 @@ mod linalg;
 mod tween;
 mod io;
 mod event;
-mod object;
+mod node;
 use std::{cell::RefCell, rc::Rc};
 
 use linalg::*;
-use object::*;
+use node::*;
 use scalar::*;
 
 fn main() {
