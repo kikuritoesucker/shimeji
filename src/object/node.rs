@@ -1,28 +1,30 @@
 use core::panic;
-use std::{cell::RefCell, rc::Rc};
+use std::{borrow::BorrowMut, cell::RefCell, rc::Rc, vec};
 
-pub struct Node {
-    parent : Option<Rc<Node>>,
-    children : Vec<Rc<Node>>,
-    
-    process : Option<Box<dyn Fn()>>
+struct NodeRaw {
+    pub parent: Option<Rc<RefCell<NodeRaw>>>,
+    pub children: Vec<Rc<RefCell<NodeRaw>>>,
+    pub process: Option<Box<dyn Fn()>>,
 }
+
+pub struct Node(Rc<RefCell<NodeRaw>>);
 
 impl Node {
     fn new() -> Self {
-        Self {
-            parent : None,
-            children : vec![],
-            process : None
+        Self(Rc::new(RefCell::new(NodeRaw {
+            parent: None,
+            children: Vec::new(),
+            process: None,
+        })))
+    }
+
+    fn add_child(&self, other: &Self) {
+        let mut parentref = self.0.clone();
+        unsafe{
+            let parentnode = &mut *parentref.as_ptr();
+            parentnode.children.push(other.0.clone());
+               
         }
-    }
-
-    fn add_child(&mut self, child : Rc<Node>) {
-        self.children.push(child);
-    }
-
-    fn attach(&mut self, parent : &mut Self){
-        unimplemented!()
+        
     }
 }
-

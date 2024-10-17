@@ -16,6 +16,10 @@ pub type Vec2f = Vec2<f32>;
 pub type Vec3f = Vec3<f32>;
 pub type Vec4f = Vec4<f32>;
 
+pub type Vec2d = Vec2<f64>;
+pub type Vec3d = Vec3<f64>;
+pub type Vec4d = Vec4<f64>;
+
 pub type Vec2i = Vec2<i32>;
 pub type Vec3i = Vec3<i32>;
 pub type Vec4i = Vec4<i32>;
@@ -31,6 +35,10 @@ pub type Mat4<T> = TMat<T, 4, 4>;
 pub type Mat2f = Mat2<f32>;
 pub type Mat3f = Mat3<f32>;
 pub type Mat4f = Mat4<f32>;
+
+pub type Mat2d = Mat2<f64>;
+pub type Mat3d = Mat3<f64>;
+pub type Mat4d = Mat4<f64>;
 
 pub type Mat2i = Mat2<i32>;
 pub type Mat3i = Mat3<i32>;
