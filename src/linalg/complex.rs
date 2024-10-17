@@ -1,12 +1,11 @@
-use quaternion::Quaternion;
-
-use crate::cmp_from;
-
 /*
     Implementation of complex numbers.
     z = x + yi
 */
+
 use super::*;
+use crate::cmp_from;
+use quaternion::Quaternion;
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Complex<T> {

@@ -1,7 +1,5 @@
-/*!Vectors are stored in one row for the good of cache locality and performance.
- *
- */
-#![allow(unused)]
+// Vectors are stored in one row for the good of cache locality and performance.
+
 
 pub use super::matrix::TMat;
 use super::{complex::Complex, quaternion::Quaternion};

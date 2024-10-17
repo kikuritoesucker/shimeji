@@ -8,3 +8,5 @@ num-traits = "*"
 
 image = "*"
 glium = "*"
+
+tokio = "*"

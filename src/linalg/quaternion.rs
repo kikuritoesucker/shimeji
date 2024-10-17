@@ -1,15 +1,13 @@
-use std::num;
-
-use complex::Complex;
-
-use crate::{lerp, vec_from};
-
-use super::*;
-
 /*
     Implementation of quaternion.
     H = a + bi + cj + dk
 */
+
+use super::*;
+use crate::{lerp, vec_from};
+use complex::Complex;
+use std::num;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Quaternion<T> {
     pub a: T,
@@ -18,7 +16,6 @@ pub struct Quaternion<T> {
     pub d: T,
 }
 
-#[allow(unused)]
 impl<T> Quaternion<T>
 where
     T: Default + Copy + num_traits::Float,
@@ -101,14 +98,14 @@ where
 
 impl<T> From<Complex<T>> for Quaternion<T>
 where
-    T: Copy + num_traits::Float
+    T: Copy + num_traits::Float,
 {
     fn from(value: Complex<T>) -> Self {
         Self {
-            a : value.x,
-            b : value.y,
-            c : T::zero(),
-            d : T::zero()
+            a: value.x,
+            b: value.y,
+            c: T::zero(),
+            d: T::zero(),
         }
     }
 }

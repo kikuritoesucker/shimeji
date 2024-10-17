@@ -2,4 +2,4 @@
 
 #### Introduction
 
-Shimeji is an application framework written in Rust.
+Shimeji is an application framework written in Rust!

@@ -3,17 +3,23 @@ mod tween;
 mod io;
 mod event;
 mod object;
+use std::{cell::RefCell, rc::Rc};
+
 use linalg::*;
+use object::*;
 use scalar::*;
 
 fn main() {
-    let p = cmp_from!(0.0, (std::f32::consts::PI));
-    let p = p.exp();
-    let p : Qua = p.into();
+    let root = Node::new(None);
+    root.borrow_mut().bind_method(Box::new(|caller|{println!("Root is called! I have {} children", caller.children.len())}));
+    let node1 = Node::new(Some(root.clone()));
+    let node2 = Node::new(Some(root.clone()));
 
-    // let mut myEvent: event::event_sync::Event<f32> = event :: event_sync ::Event::new();
-    // myEvent.subscribe(Box::new(|a : f32|{println!("{}", a)}));
-    // myEvent.emit(10.0);
+    node1.borrow_mut().bind_method(Box::new(|caller|{println!("Node1 is called!")}));
+    node2.borrow_mut().bind_method(Box::new(|caller|{println!("Node2 is called!")}));
 
-    println!("{:?}", p);
+    let node3 = Node::new(Some(node1.clone()));
+    node3.borrow_mut().bind_method(Box::new(|_|{println!("I am a child of node1 and i have been called!")}));
+
+    root.borrow().process();
 }
