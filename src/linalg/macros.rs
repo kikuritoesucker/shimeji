@@ -123,3 +123,10 @@ macro_rules! cmp_from {
         crate::linalg::Cmp::new_from($a, $b)
     };
 }
+
+#[macro_export]
+macro_rules! lerp {
+    ($a:expr, $b:expr, $c:expr) => {
+        $a * (1.0 - $c) + $b * $c
+    };
+}

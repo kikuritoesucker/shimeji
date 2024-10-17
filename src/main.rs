@@ -6,6 +6,8 @@ mod object;
 use linalg::*;
 
 fn main() {
-    let p = cmp_from!(1.0, 1.0);
-    let q = cmp_from!(1.0, 0.5);
+    let p = cmp_from!(0.0, (std::f32::consts::PI));
+    let p = p.exp();
+    let p : Qua = p.into();
+    println!("{:?}", p);
 }

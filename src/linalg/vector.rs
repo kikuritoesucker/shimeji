@@ -42,6 +42,21 @@ where
     pub fn normalize(&self) -> Self {
         self.clone() / self.length()
     }
+    
+    pub fn lerp(&self, other : &Self, t : T) -> Self {
+        *self * (T::one() - t) + *other * t
+    }
+
+    pub fn nlerp(&self, other : &Self, t : T) -> Self {
+        self.lerp(other, t).normalize()
+    }
+
+    pub fn slerp(&self, other : &Self, t : T) -> Self {
+        let theta = self.dot(&other).acos();
+        let alpha = ((T::one() - t) * theta).sin() / theta.sin();
+        let beta = (t * theta).sin() / theta.sin();
+        *self * alpha + *other * beta
+    }
 
     // pub fn normalize(&mut self) {
     //     let length = self.length();
