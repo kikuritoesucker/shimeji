@@ -83,6 +83,15 @@ where
     }
 }
 
+impl<T> std::ops::AddAssign<T> for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn add_assign(&mut self, rhs: T) {
+        *self = *self + rhs;
+    }
+}
+
 impl<T> std::ops::Add for Complex<T>
 where
     T: num_traits::Float + Copy,
@@ -92,6 +101,15 @@ where
         let (a, b) = (self.x, self.y);
         let (c, d) = (rhs.x, rhs.y);
         Self { x: a + c, y: b + d }
+    }
+}
+
+impl<T> std::ops::AddAssign for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
     }
 }
 
@@ -106,6 +124,15 @@ where
     }
 }
 
+impl<T> std::ops::SubAssign<T> for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn sub_assign(&mut self, rhs: T) {
+        *self = *self - rhs;
+    }
+}
+
 impl<T> std::ops::Sub for Complex<T>
 where
     T: num_traits::Float + Copy,
@@ -115,6 +142,15 @@ where
         let (a, b) = (self.x, self.y);
         let (c, d) = (rhs.x, rhs.y);
         Self { x: a - c, y: b - d }
+    }
+}
+
+impl<T> std::ops::SubAssign for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
     }
 }
 
@@ -132,6 +168,15 @@ where
     }
 }
 
+impl<T> std::ops::MulAssign<T> for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn mul_assign(&mut self, rhs: T) {
+        *self = *self * rhs;
+    }
+}
+
 impl<T> std::ops::Mul for Complex<T>
 where
     T: num_traits::Float + Copy,
@@ -144,6 +189,15 @@ where
             x: a * c - b * d,
             y: a * d + b * c,
         }
+    }
+}
+
+impl<T> std::ops::MulAssign for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs;
     }
 }
 
@@ -173,6 +227,15 @@ where
     }
 }
 
+impl<T> std::ops::DivAssign<T> for Complex<T>
+where
+    T: num_traits::Float + Copy,
+{
+    fn div_assign(&mut self, rhs: T) {
+        *self = *self / rhs;
+    }
+}
+
 impl<T> std::ops::Div for Complex<T>
 where
     T: num_traits::Float + Copy + Default,
@@ -182,5 +245,14 @@ where
         let (a, b) = (self.x, self.y);
         let (c, d) = (rhs.x, rhs.y);
         Self::new_from(a * c - b * d, a * d + b * c) / (c * c + d * d)
+    }
+}
+
+impl<T> std::ops::DivAssign for Complex<T>
+where
+    T: num_traits::Float + Copy + Default,
+{
+    fn div_assign(&mut self, rhs: Self) {
+        *self = *self / rhs;
     }
 }

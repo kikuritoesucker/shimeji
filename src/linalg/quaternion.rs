@@ -175,6 +175,15 @@ where
     }
 }
 
+impl<T> std::ops::AddAssign for Quaternion<T>
+where
+    T: Default + Copy + num_traits::Float,
+{
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
 impl<T> std::ops::Sub<T> for Quaternion<T>
 where
     T: Default + Copy + num_traits::Float,
@@ -202,6 +211,15 @@ where
             c: self.c - rhs.c,
             d: self.d - rhs.d,
         }
+    }
+}
+
+impl<T> std::ops::SubAssign for Quaternion<T>
+where
+    T: Default + Copy + num_traits::Float,
+{
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
     }
 }
 
@@ -237,6 +255,15 @@ where
     }
 }
 
+impl<T> std::ops::MulAssign for Quaternion<T>
+where
+    T: Default + Copy + num_traits::Float,
+{
+    fn mul_assign(&mut self, rhs: Self) {
+        *self = *self * rhs;
+    }
+}
+
 impl<T> std::ops::Div<T> for Quaternion<T>
 where
     T: Default + Copy + num_traits::Float,
@@ -259,5 +286,14 @@ where
     type Output = Self;
     fn div(self, rhs: Self) -> Self::Output {
         self * rhs.inverse() / (rhs.a * rhs.a + rhs.b * rhs.b + rhs.c * rhs.c + rhs.d * rhs.d)
+    }
+}
+
+impl<T> std::ops::DivAssign for Quaternion<T>
+where
+    T: Default + Copy + num_traits::Float,
+{
+    fn div_assign(&mut self, rhs: Self) {
+        *self = *self / rhs;
     }
 }

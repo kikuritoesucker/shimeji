@@ -6,7 +6,10 @@ edition = "2021"
 [dependencies]
 num-traits = "*"
 
-image = "*"
-glium = "*"
-
+glfw = "*"
+glutin = "*"
+gl = "*"
+# gl_generator = "*"
+# image = "*"
+# glium = "*"
 # tokio = "*"

@@ -219,17 +219,22 @@ where
     }
 }
 
-// impl<T, const R: usize, const C: usize> std::ops::Neg for TMat<T, R, C>
-// where
-//     T: std::ops::Sub<Output = T> + Copy,
-//     Self: Default,
-// {
-//     type Output = Self;
-//     fn neg(self) -> Self::Output {
-//         let result = self;
-//         for i in
-//     }
-// }
+impl<T, const R: usize, const C: usize> std::ops::Neg for TMat<T, R, C>
+where
+    T: std::ops::Neg<Output = T> + Copy,
+    Self: Default,
+{
+    type Output = Self;
+    fn neg(self) -> Self::Output {
+        let mut result: TMat<T, R, C> = Self::default();
+        for i in 0..C {
+            for j in 0..R {
+                result.data[i][j] = - self.data[i][j];
+            }
+        }
+        result
+    }
+}
 
 // Mul
 
