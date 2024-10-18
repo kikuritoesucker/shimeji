@@ -72,7 +72,7 @@ fn main() {
         },
         |window, event| {
             match event {
-                glfw::WindowEvent::Key(glfw::Key::Escape, _, glfw::Action::Press, _) => {}
+                glfw::WindowEvent::Key(glfw::Key::Escape, _, glfw::Action::Press, _) => {window.set_should_close(true);},
                 _ => (),
             }
             //println!("{:?}", event);
