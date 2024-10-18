@@ -2,14 +2,13 @@ use core::panic;
 use std::ffi::CString;
 use gl::types::*;
 
-pub struct Program {
+pub struct ShaderProgram {
     pub id: GLuint,
 }
 
-impl Program {
-    pub fn new(mut vertex_src: String, mut fragment_src: String) -> Program {
+impl ShaderProgram {
+    pub fn new(mut vertex_src: String, mut fragment_src: String) -> ShaderProgram {
         unsafe {
-
             vertex_src.push('\0');
             fragment_src.push('\0');
             // let vertex_source = CString::new(vertex_source);
@@ -77,7 +76,7 @@ impl Program {
 
             gl::DeleteShader(vertex_shader);
             gl::DeleteShader(fragment_shader);
-            Program { id: program }
+            ShaderProgram { id: program }
         }
     }
     pub fn get_attribute_id(&self, attrib: &str) -> u32 {
