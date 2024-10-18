@@ -152,10 +152,8 @@ impl Application {
                 (event_handler)(&mut self.window, event);
             }
 
-            
             unsafe {
                 (program)(&mut self.window);
-                gl::Clear(gl::COLOR_BUFFER_BIT);
             }
 
             self.window.swap_buffers();
