@@ -1,13 +1,30 @@
 use core::panic;
-use std::ffi::CString;
 use gl::types::*;
+use std::ffi::CString;
 
 pub struct ShaderProgram {
     pub id: GLuint,
+
+    vao: GLuint,
+    vbo: GLuint,
+    ebo: GLuint,
+
+    indices: Option<Vec<GLuint>>,
 }
 
 impl ShaderProgram {
-    pub fn new(mut vertex_src: String, mut fragment_src: String) -> ShaderProgram {
+
+    pub fn new() -> Self {
+        Self {
+            id : 0,
+            vao : 0,
+            vbo : 0,
+            ebo : 0,
+            indices : None
+        }
+    }
+
+    pub fn attach_shader(&mut self, mut vertex_src: String, mut fragment_src: String){
         unsafe {
             vertex_src.push('\0');
             fragment_src.push('\0');
@@ -58,7 +75,7 @@ impl ShaderProgram {
                 v.set_len(log_len.try_into().unwrap());
                 panic!("linking error {}", String::from_utf8_lossy(&v));
             }
-            
+
             // {
             //     let mut v: Vec<u8> = Vec::with_capacity(1024);
             //     let mut log_len = 0_i32;
@@ -72,11 +89,71 @@ impl ShaderProgram {
             //     println!("-----fragment-----");
             //     println!("{}", String::from_utf8_lossy(&v));
             // }
-            
 
             gl::DeleteShader(vertex_shader);
             gl::DeleteShader(fragment_shader);
-            ShaderProgram { id: program }
+            self.id = program;
+        }
+    }
+
+    pub fn bind_buffer<T>(
+        &mut self,
+        data: &Vec<T>,
+        indices: Vec<GLuint>,
+        usage: GLenum,
+        attributes: &Vec<(GLuint, GLint, GLenum, GLboolean, GLsizei, GLuint)>,
+    ) {
+        let mut vao: GLuint = 0;
+        let mut vbo: GLuint = 0;
+        let mut ebo: GLuint = 0;
+        unsafe {
+            gl::GenVertexArrays(1, &mut vao);
+            gl::GenBuffers(1, &mut vbo);
+            gl::GenBuffers(1, &mut ebo);
+            gl::BindVertexArray(vao);
+
+            gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
+            gl::BufferData(
+                gl::ARRAY_BUFFER,
+                (std::mem::size_of::<T>() * data.len()) as GLsizeiptr,
+                data.as_ptr().cast(),
+                usage,
+            );
+
+            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
+            gl::BufferData(
+                gl::ELEMENT_ARRAY_BUFFER,
+                (std::mem::size_of::<GLuint>() * indices.len()) as GLsizeiptr,
+                indices.as_ptr().cast(),
+                usage,
+            );
+
+            for &attribute in attributes {
+                let (index, size, type_, normalized, stride, offset) = attribute;
+                gl::VertexAttribPointer(
+                    index,
+                    size,
+                    type_,
+                    normalized,
+                    stride,
+                    (std::mem::size_of::<T>() as u32 * offset) as *const _,
+                );
+                gl::EnableVertexAttribArray(index);
+            }
+            gl::BindVertexArray(0);
+        }
+        self.vao = vao;
+        self.vbo = vbo;
+        self.ebo = ebo;
+        self.indices = Some(indices);
+    }
+
+    pub fn draw(&self) {
+        unsafe {
+            gl::UseProgram(self.id);
+            gl::BindVertexArray(self.vao);
+            let length = self.indices.as_ref().unwrap().len();
+            gl::DrawElements(gl::TRIANGLES, length as i32, gl::UNSIGNED_INT, std::ptr::null());
         }
     }
     pub fn get_attribute_id(&self, attrib: &str) -> u32 {
@@ -87,3 +164,69 @@ impl ShaderProgram {
         unsafe { gl::GetUniformLocation(self.id, CString::new(uniform).unwrap().as_ptr()) as u32 }
     }
 }
+
+// pub struct Buffer {
+//     vao: GLuint,
+//     vbo: GLuint,
+//     ebo: GLuint,
+
+//     indices: Option<Vec<GLuint>>,
+// }
+
+// impl<'a> Buffer {
+//     /// `attributes : (index, size, type, normalized, stride, offset)`
+//     pub fn new<T>(
+//         data: &Vec<T>,
+//         indices: Vec<GLuint>,
+//         usage: GLenum,
+//         attributes: &Vec<(GLuint, GLint, GLenum, GLboolean, GLsizei, GLuint)>,
+//     ) -> Self {
+//         let mut vao: GLuint = 0;
+//         let mut vbo: GLuint = 0;
+//         let mut ebo: GLuint = 0;
+//         unsafe {
+//             gl::GenVertexArrays(1, &mut vao);
+//             gl::GenBuffers(1, &mut vbo);
+//             gl::GenBuffers(1, &mut ebo);
+//             gl::BindVertexArray(vao);
+
+//             gl::BindBuffer(gl::ARRAY_BUFFER, vbo);
+//             gl::BufferData(
+//                 gl::ARRAY_BUFFER,
+//                 (std::mem::size_of::<T>() * data.len()) as GLsizeiptr,
+//                 data.as_ptr().cast(),
+//                 usage,
+//             );
+
+//             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, ebo);
+//             gl::BufferData(
+//                 gl::ELEMENT_ARRAY_BUFFER,
+//                 (std::mem::size_of::<GLuint>() * indices.len()) as GLsizeiptr,
+//                 indices.as_ptr().cast(),
+//                 usage,
+//             );
+
+//             for &attribute in attributes {
+//                 let (index, size, type_, normalized, stride, offset) = attribute;
+//                 gl::VertexAttribPointer(index, size, type_, normalized, stride, (std::mem::size_of::<T>() as u32 * offset) as *const _);
+//                 gl::EnableVertexAttribArray(index);
+//             }
+//             gl::BindVertexArray(0);
+//         }
+//         Self {
+//             vao,
+//             vbo,
+//             ebo,
+//             indices: Some(indices),
+//         }
+//     }
+
+//     pub fn draw(&self, program: &ShaderProgram) {
+//         unsafe {
+//             gl::UseProgram(program.id);
+//             gl::BindVertexArray(self.vao);
+//             gl::DrawElements(gl::TRIANGLES, self.indices.len() as i32, gl::UNSIGNED_INT, std::ptr::null());
+//            // gl::DrawArrays(gl::TRIANGLES, 0, 3);
+//         }
+//     }
+// }

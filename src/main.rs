@@ -7,7 +7,6 @@ mod tween;
 use std::{cell::RefCell, io::BufRead, rc::Rc};
 
 use application::*;
-use buffer::Buffer;
 use gl::types::GLsizeiptr;
 use linalg::*;
 use node::*;
@@ -17,6 +16,8 @@ use scalar::*;
 fn main() {
     let mut myapp =
         application::Application::new((1280, 720, "HelloWorld", glfw::WindowMode::Windowed));
+
+    let mut program = ShaderProgram::new();
 
     let vertices: Vec<f32> = vec![
         -0.5, -0.5, 0.0,    1.0, 0.0, 0.0,
@@ -28,7 +29,7 @@ fn main() {
         (0, 3, gl::FLOAT, gl::FALSE, (6 * std::mem::size_of::<f32>()) as i32, 0),
         (1, 3, gl::FLOAT, gl::FALSE, (6 * std::mem::size_of::<f32>()) as i32, 3)
     ];
-    let buffer = Buffer::new(&vertices, &indices, gl::STATIC_DRAW, &attrib);
+    program.bind_buffer(&vertices, indices, gl::STATIC_DRAW, &attrib);
 
     // let (mut vao, mut vbo, mut ebo) = (0, 0, 0);
     // unsafe {
@@ -72,8 +73,7 @@ fn main() {
     }
     "#
     .to_string();
-
-    let program = ShaderProgram::new(vertex_src, fragment_src);
+    program.attach_shader(vertex_src, fragment_src);
 
     myapp.run(
         |_| unsafe {
@@ -82,7 +82,7 @@ fn main() {
             // gl::BindVertexArray(vao);
             // gl::DrawArrays(gl::TRIANGLES, 0, 3);
             // gl::BindVertexArray(0);
-            buffer.draw(&program);
+            program.draw();
             //gl::ClearColor(1.0, 0.5, 0.2, 1.0);
         },
         |window, event| {
