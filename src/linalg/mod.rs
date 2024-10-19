@@ -6,6 +6,7 @@ pub mod scalar;
 pub mod complex;
 pub mod quaternion;
 pub mod gfx;
+pub mod simd;
 pub mod aliases;
 pub use aliases::*;
 

@@ -3,6 +3,7 @@
 */
 
 use super::TVec;
+use std::arch;
 
 /// #### Typed Matrix
 /// TMat<T, R, C> creates an RxC matrix of type T.\
@@ -37,17 +38,6 @@ where
         }
     }
 }
-
-// impl<T, const R: usize, const C: usize> From<T> for TMat<T, R, C>
-// where
-//     T: Copy,
-// {
-//     fn from(value: T) -> Self {
-//         Self {
-//             data: [[value; R]; C],
-//         }
-//     }
-// }
 
 impl<T, const R: usize, const C: usize> From<[[T; R]; C]> for TMat<T, R, C>
 where
@@ -289,6 +279,7 @@ impl<T, const A: usize, const B: usize> TMat<T, A, B>
 where
     T: std::ops::Mul<T, Output = T> + Default + Copy + std::ops::AddAssign,
 {
+
     pub fn matmul<const C: usize>(lhs: &Self, rhs: &TMat<T, B, C>) -> TMat<T, A, C> {
         let mut product: TMat<T, A, C> = TMat::default();
         for j in 0..C {
@@ -305,7 +296,6 @@ where
         Self::matmul(self, rhs)
     }
 }
-
 // Div
 
 impl<T, const R: usize, const C: usize> std::ops::Div<T> for TMat<T, R, C>

@@ -2,7 +2,7 @@ use core::panic;
 use gl::types::*;
 use std::ffi::CString;
 
-pub struct ShaderProgram {
+pub struct Program {
     pub id: u32,
 
     pub vao: u32,
@@ -16,7 +16,7 @@ pub struct ShaderProgram {
     post_draw : Option<Box<dyn Fn()>>,
 }
 
-impl ShaderProgram {
+impl Program {
 
     pub fn new() -> Self {
         Self {
@@ -50,7 +50,6 @@ impl ShaderProgram {
     pub fn get_program_id(&self) -> GLuint {
         self.id
     }
-
     
 
     pub fn attach_shader(&mut self, mut vertex_src: String, mut fragment_src: String){
@@ -105,20 +104,6 @@ impl ShaderProgram {
                 panic!("linking error {}", String::from_utf8_lossy(&v));
             }
 
-            // {
-            //     let mut v: Vec<u8> = Vec::with_capacity(1024);
-            //     let mut log_len = 0_i32;
-            //     gl::GetShaderSource(vertex_shader, 1024, &mut log_len, v.as_mut_ptr().cast());
-            //     v.set_len(log_len.try_into().unwrap());
-            //     println!("-----vertex-----");
-            //     println!("{}", String::from_utf8_lossy(&v));
-
-            //     gl::GetShaderSource(vertex_shader, 1024, &mut log_len, v.as_mut_ptr().cast());
-            //     v.set_len(log_len.try_into().unwrap());
-            //     println!("-----fragment-----");
-            //     println!("{}", String::from_utf8_lossy(&v));
-            // }
-
             gl::DeleteShader(vertex_shader);
             gl::DeleteShader(fragment_shader);
             self.id = program;
@@ -130,7 +115,7 @@ impl ShaderProgram {
         data: &Vec<T>,
         indices: &Vec<GLuint>,
         usage: GLenum,
-        attributes: &Vec<(GLuint, GLint, GLenum, GLboolean, GLsizei, GLuint)>,
+        attributes: &Vec<(GLuint, GLint, GLenum, GLboolean, GLuint)>,
     ) {
         let mut vao: GLuint = 0;
         let mut vbo: GLuint = 0;
@@ -157,8 +142,14 @@ impl ShaderProgram {
                 usage,
             );
 
+            let mut stride = 0;
             for &attribute in attributes {
-                let (index, size, type_, normalized, stride, offset) = attribute;
+                stride += attribute.1;
+            }
+            stride *= std::mem::size_of::<T>() as i32;
+
+            for &attribute in attributes {
+                let (index, size, type_, normalized, offset) = attribute;
                 gl::VertexAttribPointer(
                     index,
                     size,
@@ -208,4 +199,21 @@ impl ShaderProgram {
     pub fn get_uniform_id(&self, uniform: &str) -> u32 {
         unsafe { gl::GetUniformLocation(self.id, CString::new(uniform).unwrap().as_ptr()) as u32 }
     }
+}
+
+
+pub fn synthesize_data<T>(datas : &Vec<(&Vec<T>, usize)>) -> Vec<T> where T : Copy{
+    let mut synthesized: Vec<T> = Vec::new();
+    let batch_num = datas[0].0.len() / datas[0].1;
+    for i in 0..batch_num {
+        for (data, stride) in datas {
+            assert_eq!(data.len() / stride, batch_num);
+            let l = i * stride;
+            let r = (i + 1) * stride;
+            for e in l..r {
+                synthesized.push(data[e]);
+            }
+        }
+    }
+    synthesized
 }

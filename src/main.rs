@@ -4,36 +4,56 @@ mod io;
 mod linalg;
 mod node;
 mod tween;
-use std::{cell::RefCell, io::BufRead, rc::Rc};
 
 use application::*;
-use gl::types::GLsizeiptr;
 use linalg::*;
 use node::*;
 use scalar::*;
 
 
 fn main() {
-    let mut myapp =
+    {let mut myapp =
         application::Application::new((1280, 720, "HelloWorld", glfw::WindowMode::Windowed));
 
-    let mut program = ShaderProgram::new();
+    let mut program = Program::new();
 
     let vertices: Vec<f32> = vec![
-        -0.5, -0.5, 0.0,    1.0, 0.0, 0.0,
-        -0.5, 0.5, 0.0,     0.0, 1.0, 0.0,
-        0.5, 0.0, 0.0,      0.0, 0.0, 1.0
-        ];
+        -0.5, -0.5, 0.0,
+        -0.5, 0.5, 0.0,
+        0.5, 0.0, 0.0,
+    ];
+
+    let color : Vec<f32> = vec![
+        1.0, 0.0, 0.0,
+        0.0, 1.0, 0.0,
+        0.0, 0.0, 1.0,
+    ];
+
+    let tex_coord : Vec<f32> = vec![
+        0.5, 0.0,
+        0.0, 0.5,
+        1.0, 0.0,
+    ];
+
+    let data = synthesize_data(&vec![
+        (&vertices, 3), 
+        (&color, 3), 
+        (&tex_coord, 2)
+    ]);
+
+    println!("{:?}", data);
+
     let indices : Vec<u32> = vec![0, 1, 2];
     let attrib  = vec![
-        (0, 3, gl::FLOAT, gl::FALSE, (6 * std::mem::size_of::<f32>()) as i32, 0),
-        (1, 3, gl::FLOAT, gl::FALSE, (6 * std::mem::size_of::<f32>()) as i32, 3)
+        (0, 3, gl::FLOAT, gl::FALSE, 0),
+        (1, 3, gl::FLOAT, gl::FALSE, 3),
+        (2, 2, gl::FLOAT, gl::FALSE, 6),
     ];
 
     program.bind_pre_draw(Box::new(||{
         unsafe{gl::ClearColor(0.2, 0.3, 0.4, 1.0);}
     }));
-    program.bind_buffer(&vertices, &indices, gl::STATIC_DRAW, &attrib);
+    program.bind_buffer(&data, &indices, gl::STATIC_DRAW, &attrib);
 
     // let (mut vao, mut vbo, mut ebo) = (0, 0, 0);
     // unsafe {
@@ -61,10 +81,11 @@ fn main() {
     let vertex_src = r#"#version 330
     layout(location = 0) in vec3 aPos;
     layout(location = 1) in vec3 aCol;
+    layout(location = 2) in vec2 test;
     out vec3 Color;
     void main() {
         Color = aCol;
-        gl_Position = vec4(aPos, 1.0);
+        gl_Position = vec4(aPos, 1.0) + vec4(test, 0.0, 0.0);
     }
     "#
     .to_string();
@@ -77,6 +98,7 @@ fn main() {
     }
     "#
     .to_string();
+
     program.attach_shader(vertex_src, fragment_src);
 
     myapp.run(
@@ -90,5 +112,5 @@ fn main() {
             }
             //println!("{:?}", event);
         },
-    );
+    );}
 }

@@ -10,9 +10,9 @@ glfw = "*"
 glutin = "*"
 gl = "*"
 
+image = "*"
 
 # beryllium = "*"
 # gl_generator = "*"
-# image = "*"
 # glium = "*"
 # tokio = "*"
