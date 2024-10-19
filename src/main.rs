@@ -33,7 +33,7 @@ fn main() {
     program.bind_pre_draw(Box::new(||{
         unsafe{gl::ClearColor(0.2, 0.3, 0.4, 1.0);}
     }));
-    program.bind_buffer(&vertices, indices, gl::STATIC_DRAW, &attrib);
+    program.bind_buffer(&vertices, &indices, gl::STATIC_DRAW, &attrib);
 
     // let (mut vao, mut vbo, mut ebo) = (0, 0, 0);
     // unsafe {

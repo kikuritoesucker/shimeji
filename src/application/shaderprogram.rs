@@ -3,12 +3,14 @@ use gl::types::*;
 use std::ffi::CString;
 
 pub struct ShaderProgram {
-    pub id: GLuint,
-    vao: GLuint,
-    vbo: GLuint,
-    ebo: GLuint,
+    pub id: u32,
 
-    indices: Option<Vec<GLuint>>,
+    pub vao: u32,
+    pub vbo: u32,
+    pub ebo: u32,
+    pub texture : u32,
+
+    element_num: i32,
 
     pre_draw : Option<Box<dyn Fn()>>,
     post_draw : Option<Box<dyn Fn()>>,
@@ -22,11 +24,34 @@ impl ShaderProgram {
             vao : 0,
             vbo : 0,
             ebo : 0,
-            indices : None,
+            texture : 0,
+            element_num : 0,
+            pre_draw : None,
+            post_draw : None,
+        }
+    }
+
+    /// Draw callbacks won't be copied. It's required to bind methods from scratch.
+    pub fn from(other : &Self) -> Self {
+        Self {
+            id : other.id,
+            vao : other.vao,
+            vbo : other.vbo,
+            ebo : other.ebo,
+            texture : other.texture,
+
+            element_num : other.element_num,
             pre_draw : None,
             post_draw : None
         }
     }
+
+    
+    pub fn get_program_id(&self) -> GLuint {
+        self.id
+    }
+
+    
 
     pub fn attach_shader(&mut self, mut vertex_src: String, mut fragment_src: String){
         unsafe {
@@ -103,7 +128,7 @@ impl ShaderProgram {
     pub fn bind_buffer<T>(
         &mut self,
         data: &Vec<T>,
-        indices: Vec<GLuint>,
+        indices: &Vec<GLuint>,
         usage: GLenum,
         attributes: &Vec<(GLuint, GLint, GLenum, GLboolean, GLsizei, GLuint)>,
     ) {
@@ -149,7 +174,8 @@ impl ShaderProgram {
         self.vao = vao;
         self.vbo = vbo;
         self.ebo = ebo;
-        self.indices = Some(indices);
+        self.element_num = indices.len().try_into().unwrap();
+
     }
 
     pub fn bind_pre_draw(&mut self, callback : Box<dyn Fn()>) {
@@ -168,8 +194,7 @@ impl ShaderProgram {
             
             gl::UseProgram(self.id);
             gl::BindVertexArray(self.vao);
-            let length = self.indices.as_ref().unwrap().len();
-            gl::DrawElements(gl::TRIANGLES, length as i32, gl::UNSIGNED_INT, std::ptr::null());
+            gl::DrawElements(gl::TRIANGLES, self.element_num, gl::UNSIGNED_INT, std::ptr::null());
 
             if let Some(callback) = &self.post_draw {
                 (callback)();

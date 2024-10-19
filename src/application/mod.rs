@@ -8,6 +8,3 @@ pub use shaderprogram::*;
 
 pub mod app;
 pub use app::*;
-
-// pub mod buffer;
-// use buffer::*;
