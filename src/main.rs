@@ -29,6 +29,10 @@ fn main() {
         (0, 3, gl::FLOAT, gl::FALSE, (6 * std::mem::size_of::<f32>()) as i32, 0),
         (1, 3, gl::FLOAT, gl::FALSE, (6 * std::mem::size_of::<f32>()) as i32, 3)
     ];
+
+    program.bind_pre_draw(Box::new(||{
+        unsafe{gl::ClearColor(0.2, 0.3, 0.4, 1.0);}
+    }));
     program.bind_buffer(&vertices, indices, gl::STATIC_DRAW, &attrib);
 
     // let (mut vao, mut vbo, mut ebo) = (0, 0, 0);
@@ -77,13 +81,7 @@ fn main() {
 
     myapp.run(
         |_| unsafe {
-            gl::ClearColor(0.2, 0.3, 0.4, 1.0);
-            // gl::UseProgram(program.id);
-            // gl::BindVertexArray(vao);
-            // gl::DrawArrays(gl::TRIANGLES, 0, 3);
-            // gl::BindVertexArray(0);
             program.draw();
-            //gl::ClearColor(1.0, 0.5, 0.2, 1.0);
         },
         |window, event| {
             match event {
