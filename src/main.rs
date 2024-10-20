@@ -2,7 +2,7 @@ mod application;
 mod event;
 mod io;
 mod linalg;
-mod node;
+mod node_tree;
 mod component;
 mod tween;
 use std::{ffi::CString, u8};
@@ -10,6 +10,7 @@ use std::{ffi::CString, u8};
 use application::*;
 use linalg::*;
 use component::*;
+use node_tree::NodeTree;
 use scalar::*;
 
 fn main() {

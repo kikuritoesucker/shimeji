@@ -13,3 +13,4 @@ image = "*"
 rand = "*"
 
 rust-embed = "*"
+lazy_static = "*"

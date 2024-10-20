@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 
-use crate::node::{NodeTree, Node};
+use crate::node_tree::{NodeTree, Node};
 
 pub struct Null {
     method: RefCell<Option<Box<dyn Fn(&NodeTree)>>>,
