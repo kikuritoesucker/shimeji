@@ -1,31 +1,36 @@
 mod application;
+mod component;
 mod event;
 mod io;
 mod linalg;
 mod node_tree;
-mod component;
 mod tween;
-use std::{ffi::CString, u8};
+use std::{borrow::BorrowMut, ffi::CString, u8};
 
 use application::*;
-use linalg::*;
 use component::*;
-use node_tree::NodeTree;
+use linalg::*;
+use node_tree::Node;
 use scalar::*;
 
 fn main() {
+    let mut node1 = Node::new(None);
+    let mut node2 = Node::new(Some(&node1));
+    let mut node3 = Node::new(Some(&node1));
+
     let mut myapp = application::Application::new((1280, 720, "hello", glfw::WindowMode::Windowed));
 
     let mut program = Program::new();
 
     let (width, height, data) =
-        Texture::read_from_file(r"D:\workspace\shimeji\shimeji\assets\image\emoji.png");
+        Texture::read_from_file(r"C:\Users\26808\Desktop\Pics\burger-export.png");
     let tex = Texture::new(GLTexture::Texture2D(
         width as i32,
         height as i32,
         data.as_ptr() as *const std::ffi::c_void,
         true,
     ));
+
     program.bind_texture(&tex);
 
     let vertices: Vec<f32> = vec![
@@ -97,7 +102,7 @@ void main() {
                 Vec3f::from([[1.0, 1.0, 1.0]]).normalize(),
                 (glfw.get_time() as f32 * 100.0).to_radians(),
             );
-            println!("{:?}", transform);
+            //println!("{:?}", transform);
             program.set_uniform(
                 "transform",
                 transform, //Mat4f::rotation_x(glfw.get_time() as f32 * 24.0) * Mat4f::translation_xyz((glfw.get_time() * 20.0).sin() as f32, (glfw.get_time() * 13.0).sin() as f32, 0.0)

@@ -43,6 +43,14 @@ where
         self.length_squared().sqrt()
     }
 
+    pub fn distance_to(&self, other: &Self) -> T {
+        (*self - *other).length()
+    }
+
+    pub fn angle_to(&self, other: &Self) -> T{
+        self.dot(other) / self.length() / other.length()
+    }
+
     pub fn normalize(&self) -> Self {
         self.clone() / self.length()
     }
@@ -61,6 +69,7 @@ where
         let beta = (t * theta).sin() / theta.sin();
         *self * alpha + *other * beta
     }
+
 
     // pub fn normalize(&mut self) {
     //     let length = self.length();
@@ -166,5 +175,13 @@ where
     }
     pub fn w_mut(&mut self) -> &mut T {
         &mut self[0][3]
+    }
+}
+
+impl Vec4f {
+    pub fn homogenize(&self) -> Self{
+        Self :: from([
+            [self.x() / self.w(), self.y() / self.w(), self.z() / self.w(), 1_f32]
+        ])
     }
 }

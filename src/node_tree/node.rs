@@ -1,91 +1,181 @@
+use lazy_static::lazy_static;
+
 use crate::component::obj::*;
 use core::panic;
-use std::sync::{LazyLock, Arc, Mutex};
+use std::{cell::RefCell, rc::Rc, sync::Mutex};
 
 macro_rules! wrap {
     ($a:expr) => {
-        Arc::new(Mutex::new($a))
+        Rc::new(RefCell::new($a))
     };
 }
 
-pub trait Node {
-    fn process(&self, caller_node: &NodeTree);
-    fn bind_method(&self, method: Box<dyn Fn(&NodeTree)>);
-    fn call_method(&self, caller_node: &NodeTree);
+macro_rules! node {
+    ($a : expr) => {
+        (*$a).borrow_mut()
+    };
 }
 
-pub struct NodeTree {
-    pub parent: Option<Arc<Mutex<NodeTree>>>,
-    pub children: Vec<Arc<Mutex<NodeTree>>>,
-    pub obj: Box<dyn Node>,
+lazy_static! {
+    static ref NODE_IDENT: Mutex<usize> = Mutex::new(0);
+}
 
-    //pub id : usize,
+pub trait Processable {
+    fn process(&self, caller_node: &Node);
+    fn bind_method(&self, method: Box<dyn Fn(&Node)>);
+    fn call_method(&self, caller_node: &Node);
+}
+
+/// Wrapper for NodeTree.
+pub struct Node(Rc<RefCell<NodeTree>>);
+
+impl Node {
+    pub fn new(parent: Option<&Self>) -> Self {
+        match parent {
+            None => NodeTree::new(None),
+            Some(p) => NodeTree::new(Some(p.0.clone()))
+        }
+    }
+
+    pub fn add_child(&self, other: &Self) {
+        if !self.is_successor_of(other){
+            NodeTree::add_child(self.0.clone(), other.0.clone());
+        } else {
+            panic!("attempting to add an ancestor node as child");
+        }
+    }
+
+    pub fn detach(&self) {
+        NodeTree::detach(&self.0);
+    }
+
+    pub fn bind_method(&self, method: Box<dyn Fn(&Node)>) -> Self {
+        Self(NodeTree::bind_method(&self.0, method).clone())
+    }
+
+    pub fn bind_object(&self, object: Box<dyn Processable>) -> Self {
+        Self(NodeTree::bind_object(&self.0, object).clone())
+    }
+
+    pub fn is_successor_of(&self, other : &Self) -> bool {
+        let mut node = self.0.clone();
+        loop {
+            if let Some(parent) = node!(node.clone()).parent.clone(){
+                if Rc::ptr_eq(&parent, &other.0) {
+                    return true;
+                }
+                node = parent;
+            } else {
+                break;
+            }
+            
+        }
+        false
+    }
+
+    pub fn is_sibling_with(&self, other : &Self) -> bool {
+        if let (Some(p1), Some(p2)) = (node!(self.0).parent.clone(), node!(other.0).parent.clone()) {
+            return Rc::ptr_eq(&p1, &p2);
+        }
+        false
+    }
+
+    pub fn process(&self) {
+        NodeTree::process(&node!(self.0), &self);
+    }
+}
+
+impl PartialEq for Node {
+    fn eq(&self, other: &Self) -> bool {
+        Rc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+struct NodeTree {
+    pub parent: Option<Rc<RefCell<NodeTree>>>,
+    pub children: Vec<Rc<RefCell<NodeTree>>>,
+    pub obj: Box<dyn Processable>,
+    pub id: usize,
     //pub proc: Option<Box<dyn Fn(&Option<Box<dyn Object>>, &Node)>>,
 }
 
 impl NodeTree {
-    pub fn new(parent: Option<Arc<Mutex<NodeTree>>>) -> Arc<Mutex<NodeTree>> {
+    fn new(parent: Option<Rc<RefCell<NodeTree>>>) -> Node {
         match parent {
             Some(parent) => {
-                let parent_node: Arc<Mutex<NodeTree>> = parent.clone();
-                let mut parent_node = parent_node.try_lock().unwrap();
+                let parent_node: Rc<RefCell<NodeTree>> = parent.clone();
+                let mut parent_node = (*parent_node).borrow_mut();
                 let new_node = Self {
                     parent: Some(parent.clone()),
                     children: Vec::new(),
-                    //id : 
+                    id: {
+                        let mut ident = NODE_IDENT.try_lock().unwrap();
+                        *ident += 1;
+                        *ident
+                    },
                     obj: Box::new(Null::new()),
                 };
                 let new_node = wrap!(new_node);
                 parent_node.children.push(new_node.clone());
-                new_node
+                Node(new_node)
             }
             None => {
                 let new_node = Self {
                     parent: None,
                     children: Vec::new(),
+                    id: {
+                        let mut ident = NODE_IDENT.try_lock().unwrap();
+                        *ident += 1;
+                        *ident
+                    },
                     obj: Box::new(Null::new()),
                 };
-                wrap!(new_node)
+                Node(wrap!(new_node))
             }
         }
     }
 
-    pub fn add_child(parent: Arc<Mutex<NodeTree>>, child: Arc<Mutex<NodeTree>>) {
-        match &child.try_lock().unwrap().parent {
-            Some(parent) => panic!("node already has a parent"),
+    fn add_child(parent: Rc<RefCell<NodeTree>>, child: Rc<RefCell<NodeTree>>) {
+        match &child.clone().borrow().parent {
+            Some(parent) => panic!("node already has an parent"),
             None => {
-                child.try_lock().unwrap().parent = Some(parent.clone());
-                parent.try_lock().unwrap().children.push(child.clone());
+                node!(parent).children.push(child.clone());
+                node!(child).parent = Some(parent.clone());
             }
         }
-    
     }
 
-    pub fn deattach(node: Arc<Mutex<NodeTree>>) -> Arc<Mutex<NodeTree>> {
-        match &node.try_lock().unwrap().parent {
-            None => (),
-            Some(_) => {
-                node.try_lock().unwrap().parent = None;
-            }
+    fn detach(this: &Rc<RefCell<NodeTree>>) {
+        if let Some(parent) = &node!(this).parent {
+            let mut parent_borrowed = parent.borrow_mut();
+            parent_borrowed
+                .children
+                .retain(|child| !Rc::ptr_eq(child, &this));
         }
-        node
+        node!(this).parent = None;
     }
 
-    pub fn bind_method(&self, method: Box<dyn Fn(&NodeTree)>) -> &Self {
-        self.obj.bind_method(method);
-        self
+    fn bind_method(
+        this: &Rc<RefCell<NodeTree>>,
+        method: Box<dyn Fn(&Node)>,
+    ) -> &Rc<RefCell<NodeTree>> {
+        node!(this).obj.bind_method(method);
+        this
     }
 
-    pub fn bind_object(&mut self, object: Box<dyn Node>) -> &Self {
-        self.obj = object;
-        self
+    fn bind_object(
+        this: &Rc<RefCell<NodeTree>>,
+        object: Box<dyn Processable>,
+    ) -> &Rc<RefCell<NodeTree>> {
+        node!(this).obj = object;
+        this
     }
 
-    pub fn process(&self) {
-        self.obj.process(&self);
-        self.obj.call_method(&self);
+    fn process(&self, caller: &Node) {
+        self.obj.process(&caller);
+        self.obj.call_method(&caller);
         for child in &self.children {
-            child.try_lock().unwrap().process();
+            child.borrow().process(caller);
         }
     }
 }

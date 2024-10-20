@@ -1,9 +1,9 @@
 use std::cell::RefCell;
 
-use crate::node_tree::{NodeTree, Node};
+use crate::node_tree::{Node, Processable};
 
 pub struct Null {
-    method: RefCell<Option<Box<dyn Fn(&NodeTree)>>>,
+    method: RefCell<Option<Box<dyn Fn(&Node)>>>,
 }
 
 impl Null {
@@ -12,14 +12,14 @@ impl Null {
     }
 }
 
-impl Node for Null {
-    fn process(&self, caller_node: &NodeTree) {}
+impl Processable for Null {
+    fn process(&self, caller_node: &Node) {}
 
-    fn bind_method(&self, method: Box<dyn Fn(&NodeTree)>) {
+    fn bind_method(&self, method: Box<dyn Fn(&Node)>) {
         self.method.replace(Some(method));
     }
 
-    fn call_method(&self, caller_node: &NodeTree) {
+    fn call_method(&self, caller_node: &Node) {
         if let Some(ref method) = *self.method.borrow() {
             (method)(caller_node);
         }
