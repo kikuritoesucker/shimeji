@@ -2,9 +2,9 @@ mod application;
 mod event;
 mod io;
 mod linalg;
+mod node;
 mod object;
 mod tween;
-
 use std::{ffi::CString, u8};
 
 use application::*;
