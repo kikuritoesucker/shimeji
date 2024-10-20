@@ -9,10 +9,5 @@ num-traits = "*"
 glfw = "*"
 glutin = "*"
 gl = "*"
-
 image = "*"
-
-# beryllium = "*"
-# gl_generator = "*"
-# glium = "*"
-# tokio = "*"
+rand = "*"

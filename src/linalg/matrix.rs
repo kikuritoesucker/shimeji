@@ -24,6 +24,7 @@ use std::arch;
 /// ```
 
 #[derive(Debug, Clone, Copy, PartialEq)]
+#[repr(align(16))]
 pub struct TMat<T, const R: usize, const C: usize> {
     pub data: [[T; R]; C],
 }

@@ -1071,6 +1071,7 @@ dependencies = [
  "glutin",
  "image",
  "num-traits",
+ "rand",
 ]
 
 [[package]]
