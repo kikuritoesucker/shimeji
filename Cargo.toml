@@ -11,3 +11,5 @@ glutin = "*"
 gl = "*"
 image = "*"
 rand = "*"
+
+rust-embed = "*"

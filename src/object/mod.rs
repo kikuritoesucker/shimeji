@@ -8,4 +8,4 @@ pub use object_trait::*;
 
 pub mod obj;
 // pub mod obj2d;
-// pub mod obj3d;
+// pub mod obj3d;k
