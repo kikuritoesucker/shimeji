@@ -1,6 +1,6 @@
 use core::panic;
 use std::{cell::{RefCell, RefMut}, fmt::Debug, rc::Rc};
-use crate::object::obj::*;
+use crate::component::obj::*;
 
 #[macro_export]
 macro_rules! get_ref {

@@ -3,13 +3,13 @@ mod event;
 mod io;
 mod linalg;
 mod node;
-mod object;
+mod component;
 mod tween;
 use std::{ffi::CString, u8};
 
 use application::*;
 use linalg::*;
-use object::*;
+use component::*;
 use scalar::*;
 
 fn main() {
