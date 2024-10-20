@@ -4,7 +4,7 @@ use glfw::{
 };
 
 pub struct Application {
-    glfw_context: glfw::Glfw,
+    pub glfw_context: glfw::Glfw,
     window: glfw::PWindow,
     events: glfw::GlfwReceiver<(f64, WindowEvent)>,
 }
@@ -48,7 +48,7 @@ impl Application {
 
     pub fn run(
         &mut self,
-        program: impl Fn(&mut glfw::PWindow),
+        program: impl Fn(&mut glfw::PWindow, &glfw::Glfw),
         event_handler: impl Fn(&mut glfw::PWindow, glfw::WindowEvent),
     ) {
         while !self.window.should_close() {
@@ -58,7 +58,7 @@ impl Application {
             }
             unsafe {
                 gl::Clear(gl::COLOR_BUFFER_BIT);
-                (program)(&mut self.window);
+                (program)(&mut self.window, &self.glfw_context);
             }
 
             self.window.swap_buffers();

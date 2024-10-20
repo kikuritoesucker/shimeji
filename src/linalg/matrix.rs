@@ -228,23 +228,23 @@ where
 
 // Mul
 
-impl<T, const R: usize, const C: usize> std::ops::Mul<Self> for TMat<T, R, C>
-where
-    T: std::ops::Mul<Output = T> + Copy,
-    Self: Default,
-{
-    type Output = TMat<T, R, C>;
+// impl<T, const R: usize, const C: usize> std::ops::Mul<Self> for TMat<T, R, C>
+// where
+//     T: std::ops::Mul<Output = T> + Copy,
+//     Self: Default,
+// {
+//     type Output = TMat<T, R, C>;
 
-    fn mul(self, rhs: Self) -> Self::Output {
-        let mut result: TMat<T, R, C> = Self::default();
-        for i in 0..C {
-            for j in 0..R {
-                result.data[i][j] = self.data[i][j] * rhs.data[i][j];
-            }
-        }
-        result
-    }
-}
+//     fn mul(self, rhs: Self) -> Self::Output {
+//         let mut result: TMat<T, R, C> = Self::default();
+//         for i in 0..C {
+//             for j in 0..R {
+//                 result.data[i][j] = self.data[i][j] * rhs.data[i][j];
+//             }
+//         }
+//         result
+//     }
+// }
 
 impl<T, const R: usize, const C: usize> std::ops::Mul<T> for TMat<T, R, C>
 where
@@ -264,15 +264,43 @@ where
     }
 }
 
-impl<T, const R: usize, const C: usize> std::ops::MulAssign for TMat<T, R, C>
+impl<T, const R: usize, const C: usize> std::ops::MulAssign<T> for TMat<T, R, C>
 where
     T: std::ops::Mul<Output = T> + Copy,
     Self: Default,
 {
-    fn mul_assign(&mut self, rhs: Self) {
+    fn mul_assign(&mut self, rhs: T) {
         *self = *self * rhs;
     }
 }
+
+impl<T, const A: usize, const B: usize, const C: usize> std::ops::Mul<TMat<T, B, C>> for TMat<T, A, B>
+where
+    T: std::ops::Mul<T, Output = T> + Default + Copy + std::ops::AddAssign,
+{
+    type Output = TMat<T, A, C>;
+    fn mul(self, rhs: TMat<T, B, C>) -> Self::Output {
+        let mut product: TMat<T, A, C> = TMat::default();
+        for j in 0..C {
+            for k in 0..B {
+                for i in 0..A {
+                    product[j][i] += self[k][i] * rhs[j][k];
+                }
+            }
+        }
+        product
+    }
+}
+
+impl<T, const A: usize> std::ops::MulAssign<TMat<T, A, A>> for TMat<T, A, A>
+where
+    T: std::ops::Mul<T, Output = T> + Default + Copy + std::ops::AddAssign,
+{
+    fn mul_assign(&mut self, rhs: TMat<T, A, A>) {
+        *self = *self * rhs;
+    }   
+}
+
 
 
 impl<T, const A: usize, const B: usize> TMat<T, A, B>
